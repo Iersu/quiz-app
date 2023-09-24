@@ -29,25 +29,26 @@ export const ScoreboardWrapper = styled.div`
   height: fit-content;
   ${ScoreboardCard}:nth-child(2) {
     margin-left: -10px;
+    padding-right: 10px;
     min-width: 236px;
     z-index: -1;
     background-image: linear-gradient(90deg, #cd2e4b 0%, #ff4369 100%);
   }
   ${ScoreboardCard}:nth-child(3) {
     margin-left: -10px;
+    padding-right: 10px;
     min-width: 236px;
     z-index: -2;
     background-image: linear-gradient(90deg, #cd2e4b 0%, #ff4369 100%);
   }
   ${ScoreboardCard}:nth-child(4) {
     margin-left: -10px;
+    padding-right: 10px;
     min-width: 236px;
     z-index: -3;
     background-image: linear-gradient(90deg, #cd2e4b 0%, #ff4369 100%);
   }
 `
-
-export const PlayerName = styled.p``
 
 export const Points = styled.p`
   margin-left: 20px;
@@ -57,11 +58,11 @@ export const Points = styled.p`
 export const TimerCard = styled.div`
   display: flex;
   align-items: center;
-  height 50px;
+  height: 50px;
   border-radius: 10px 0 0 10px;
   padding-right: 35px;
   padding-left: 15px;
-  background: ${({ theme }) => theme.colors.accentColor}
+  background: ${({ theme }) => theme.colors.accentColor};
 `
 
 export const TimerIcon = styled.img`

@@ -179,16 +179,13 @@ export const reducer = (state: QuizStateType, action: any) => {
       return {
         ...state,
         winner: state.playersInformation.reduce((accumulator, currentValue) => {
-          if (
-            accumulator.score !== currentValue.score &&
-            accumulator.score !== null
-          ) {
+          if (accumulator.score !== currentValue.score) {
             if (currentValue.score > accumulator.score) {
               return currentValue
             }
             return accumulator
           } else {
-            return { ...initialValue, score: null }
+            return { ...currentValue, name: '' }
           }
         }, initialValue),
       }
@@ -204,16 +201,16 @@ const useQuiz = (navigate: NavigateFunction) => {
 
   const generateComputerAnswer = useCallback(
     (setComputerAnswer: (answer: string, answerTIme: number) => void) => {
-      const answerChosingInterval = Math.floor(Math.random() * 14)
+      const answerChosingInterval = Math.floor(Math.random() * 12) + 1
       const randomAnswerNumber = Math.floor(Math.random() * 3)
 
       setTimeout(() => {
         setComputerAnswer(
           state.questions[state.currentQuestion].answers[randomAnswerNumber]
             .answer,
-          15 - answerChosingInterval
+          answerChosingInterval
         )
-      }, answerChosingInterval * 1000)
+      }, (15 - answerChosingInterval) * 1000)
     },
     [state.currentQuestion, state.questions]
   )
@@ -228,6 +225,8 @@ const useQuiz = (navigate: NavigateFunction) => {
     },
     []
   )
+  if (state.timer === 1 || state.isRoundFinished)
+    console.log(state.playersAnswers)
 
   const setAutoPlayer2Answer = useCallback(
     (answer: string, answerTime: number) => {
@@ -417,7 +416,7 @@ const useQuiz = (navigate: NavigateFunction) => {
             }
             return {
               ...playerInfo,
-              score: playerInfo.score + finalPoints, // score: playerInfo.score + finalPoints
+              score: playerInfo.score + finalPoints,
             }
           }
           return playerInfo
@@ -479,7 +478,7 @@ const useQuiz = (navigate: NavigateFunction) => {
             })
             navigate('/results')
           }
-        }, 4000) // 4 sec
+        }, 4000)
       }
     }
 

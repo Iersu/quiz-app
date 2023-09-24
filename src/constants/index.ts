@@ -58,7 +58,7 @@ export const THEMES = {
   },
 }
 
-export const NUMBER_OF_QUESTIONS = [2, 30, 50] // put it back to 10
+export const NUMBER_OF_QUESTIONS = [10, 30, 50]
 
 export const NUMBER_OF_PLAYERS = [
   {

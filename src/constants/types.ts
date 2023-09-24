@@ -23,12 +23,6 @@ export interface PlayerAnswersType {
     answerTime: null | number
   }
 }
-// export interface PlayerAnswersType {
-//   [key: string]: {
-//     answer: string
-//     answerTime: number
-//   }
-// }
 
 export interface PlayerNames {
   humanPlayer: 'humanPlayer'
@@ -45,7 +39,7 @@ export interface PlayerInformationType {
 
 export interface WinnerType {
   name: null | string
-  score: null | number
+  score: number
   id: null | string
 }
 
