@@ -1,6 +1,4 @@
-import { useEffect } from 'react'
 import { useQuizContext } from '../../context'
-// import { shuffleArray } from '../../utils'
 
 import {
   ScoreboardWrapper,
@@ -15,11 +13,13 @@ import {
   Question,
   Answer,
   AnswersContainer,
-  AnswerLable,
+  AnswerLabel,
   AnserText,
   HR,
+  SpinnerConatiner,
 } from './gameStyle'
-import { useNavigate } from 'react-router-dom'
+import { ICONS } from '../../constants'
+import { PlayerInformationType } from '../../constants/types'
 
 export const Quiz = () => {
   const {
@@ -30,59 +30,49 @@ export const Quiz = () => {
     playersAnswers,
     timer,
     isRoundFinished,
-    winner
   } = useQuizContext()
-  const navigate = useNavigate()
 
   const questionObj = questions[currentQuestion]
-  const correctAnswer = questionObj.correct_answer
-  const firstAnswer = questionObj.answers[answerOrder[0]].answer
-  const secondAnswer = questionObj.answers[answerOrder[1]].answer
-  const thirdAnswer = questionObj.answers[answerOrder[2]].answer
-  const humanPlayerAnswer = playersAnswers.humanPlayer.answer
+  const correctAnswer = questionObj?.correct_answer
+  const firstAnswer = questionObj?.answers[answerOrder[0]].answer
+  const secondAnswer = questionObj?.answers[answerOrder[1]].answer
+  const thirdAnswer = questionObj?.answers[answerOrder[2]].answer
+  const humanPlayerAnswer = playersAnswers?.humanPlayer.answer
 
   const onSelectAnswer = (selectedAnswer: string) => () => {
     if (isRoundFinished) return
     setHumanPlayerAnswer(selectedAnswer, timer)
   }
 
-  useEffect(() => {
-    if (winner) navigate("/results")
-    
-    // no need to include navigate because it will not change
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [winner])
-
-  // MAP THIS
   return (
     <Container>
       <QuestionWrapper>
-        <Question>{questionObj.question}</Question>
+        <Question>{questionObj?.question}</Question>
         <HR />
       </QuestionWrapper>
-      <AnswersContainer isRoundFinished={isRoundFinished}>
+      <AnswersContainer $isRoundFinished={isRoundFinished}>
         <Answer
-          correctAnswer={firstAnswer === correctAnswer && isRoundFinished}
-          selectedAnswer={humanPlayerAnswer === firstAnswer}
+          $correctanswer={firstAnswer === correctAnswer && isRoundFinished}
+          $selectedanswer={humanPlayerAnswer === firstAnswer}
           onClick={onSelectAnswer(firstAnswer)}
         >
-          <AnswerLable>A</AnswerLable>
+          <AnswerLabel>A</AnswerLabel>
           <AnserText>{firstAnswer}</AnserText>
         </Answer>
         <Answer
-          correctAnswer={secondAnswer === correctAnswer && isRoundFinished}
-          selectedAnswer={humanPlayerAnswer === secondAnswer}
+          $correctanswer={secondAnswer === correctAnswer && isRoundFinished}
+          $selectedanswer={humanPlayerAnswer === secondAnswer}
           onClick={onSelectAnswer(secondAnswer)}
         >
-          <AnswerLable>B</AnswerLable>
+          <AnswerLabel>B</AnswerLabel>
           <AnserText>{secondAnswer}</AnserText>
         </Answer>
         <Answer
-          correctAnswer={thirdAnswer === correctAnswer && isRoundFinished}
-          selectedAnswer={humanPlayerAnswer === thirdAnswer}
+          $correctanswer={thirdAnswer === correctAnswer && isRoundFinished}
+          $selectedanswer={humanPlayerAnswer === thirdAnswer}
           onClick={onSelectAnswer(thirdAnswer)}
         >
-          <AnswerLable>C</AnswerLable>
+          <AnswerLabel>C</AnswerLabel>
           <AnserText>{thirdAnswer}</AnserText>
         </Answer>
       </AnswersContainer>
@@ -90,35 +80,38 @@ export const Quiz = () => {
   )
 }
 
-// interface PlayerType {
-//   name: string
-//   score: number
-//   selectedAnswre: null
-// }
-
 export const Header = () => {
-  const { playersInformation, numberOfPlayers, timer } = useQuizContext()
+  const { playersInformation, numberOfPlayers, timer, playersAnswers } =
+    useQuizContext()
 
   return (
     <HeaderWrapper>
       <ScoreboardWrapper>
-        {playersInformation.map((playersInfo: any, index: number) => {
-          if (index < numberOfPlayers)
+        {playersInformation
+          .slice(0, numberOfPlayers)
+          .map((playersInfo: PlayerInformationType) => {
             return (
               <ScoreboardCard key={playersInfo.name}>
                 <p>{playersInfo.name}</p>
                 <Points>{playersInfo.score} pts</Points>
+                {playersAnswers[playersInfo.id].answer &&
+                  playersInfo.id !== 'humanPlayer' && (
+                    <img src={ICONS.checkMark.link} alt={ICONS.checkMark.alt} />
+                  )}
               </ScoreboardCard>
             )
-            return null
-        })}
+          })}
       </ScoreboardWrapper>
       <TimerCard>
-        <TimerIcon src="/assets/svgs/timer-20.svg" alt="Stopwatch" />
+        <TimerIcon src={ICONS.timer.link} alt={ICONS.timer.alt} />
         <Time>{timer}</Time>
       </TimerCard>
     </HeaderWrapper>
   )
 }
 
-
+export const Spinner = () => (
+  <SpinnerConatiner>
+    <img src={ICONS.spinner.link} alt={ICONS.spinner.alt} />
+  </SpinnerConatiner>
+)

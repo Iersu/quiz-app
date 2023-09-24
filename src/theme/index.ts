@@ -1,30 +1,26 @@
 export const theme = {
-  blue : {
+  blue: {
     bgImage: '/assets/images/blue2.jpg',
     colors: {
-      ctrl: "#ffff",
-      accentColor: "#FF456A",
-      borderColor: "#00C3FE"
+      ctrl: '#ffff',
+      accentColor: '#FF456A',
+      borderColor: '#00C3FE',
     },
-    paddings: {
-      tight: "5px",
-      standard:"15px",
-      disassociate: "25px",
-      unrelated: "30px"
-    }
   },
-  black : {
-    bgImage: '/assets/images/black.jpg',
+  red: {
+    bgImage: '/assets/images/red.jpg',
     colors: {
-      ctrl: "#ffff",
-      accentColor: "#FF456A",
-      borderColor: "#FED020"
+      ctrl: '#ffff',
+      accentColor: '#FF456A',
+      borderColor: '#F80411',
     },
-    paddings: {
-      tight: "5px",
-      standard:"15px",
-      disassociate: "25px",
-      unrelated: "30px"
-    }
-  }
-}   
+  },
+  purple: {
+    bgImage: '/assets/images/purple.jpg',
+    colors: {
+      ctrl: '#ffff',
+      accentColor: '#FF456A',
+      borderColor: '#9930B1',
+    },
+  },
+}

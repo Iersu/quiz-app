@@ -6,24 +6,31 @@ import { htmlDecode, shuffleArray } from '../utils'
 
 import { ACTIONS } from '../constants'
 import { QuizStateType } from '../constants/state.types'
-import { useNavigate } from 'react-router-dom'
+import {
+  PlayerAnswerType,
+  PlayerAnswersType,
+  PlayerInformationType,
+  QuestionResponseType,
+  WinnerType,
+} from '../constants/types'
+import { NavigateFunction } from 'react-router-dom'
 
-const playerAnswersDefaultState = {
+const playerAnswersDefaultState: PlayerAnswersType = {
   humanPlayer: {
     answer: null,
-    answerTIme: null,
+    answerTime: null,
   },
   autoPlayer1: {
     answer: null,
-    answerTIme: null,
+    answerTime: null,
   },
   autoPlayer2: {
     answer: null,
-    answerTIme: null,
+    answerTime: null,
   },
   autoPlayer3: {
     answer: null,
-    answerTIme: null,
+    answerTime: null,
   },
 }
 
@@ -59,7 +66,11 @@ export const initialState = {
     },
   ],
   playersAnswers: playerAnswersDefaultState,
-  winner: null
+  winner: {
+    name: null,
+    score: 0,
+    id: null,
+  },
 }
 
 export const reducer = (state: QuizStateType, action: any) => {
@@ -159,27 +170,27 @@ export const reducer = (state: QuizStateType, action: any) => {
         playersAnswers: playerAnswersDefaultState,
       }
     case ACTIONS.GET_THE_WINNER:
-      const initialValue: any = {
-        name: null,
+      const initialValue: WinnerType = {
+        name: '',
         score: 0,
-        id: null,
+        id: '',
       }
 
       return {
         ...state,
-        winner: state.playersInformation.reduce(
-          (accumulator: any, currentValue: any) => {
-            if (accumulator?.score !== currentValue?.score && accumulator !== null) {
-              if (currentValue.score > accumulator.score) {
-                return currentValue
-              }
-              return accumulator
-            } else {
-              return initialValue
+        winner: state.playersInformation.reduce((accumulator, currentValue) => {
+          if (
+            accumulator.score !== currentValue.score &&
+            accumulator.score !== null
+          ) {
+            if (currentValue.score > accumulator.score) {
+              return currentValue
             }
-          },
-          initialValue
-        )
+            return accumulator
+          } else {
+            return { ...initialValue, score: null }
+          }
+        }, initialValue),
       }
     case ACTIONS.RESET_GAME:
       return initialState
@@ -188,77 +199,95 @@ export const reducer = (state: QuizStateType, action: any) => {
   }
 }
 
-const useQuiz = () => {
+const useQuiz = (navigate: NavigateFunction) => {
   const [state, dispatch] = useReducer(reducer, initialState)
 
-  const generateComputerAnswer = (
-    setComputerAnswer: (answer: string, answerTIme: number) => void
-  ) => {
-    const answerChosingInterval = Math.floor(Math.random() * 14)
-    const randomAnswerNumber = Math.floor(Math.random() * 3)
+  const generateComputerAnswer = useCallback(
+    (setComputerAnswer: (answer: string, answerTIme: number) => void) => {
+      const answerChosingInterval = Math.floor(Math.random() * 14)
+      const randomAnswerNumber = Math.floor(Math.random() * 3)
 
-    setTimeout(() => {
-      setComputerAnswer(
-        state.questions[state.currentQuestion].answers[randomAnswerNumber]
-          .answer,
-        15 - answerChosingInterval
-      )
-    }, answerChosingInterval * 1000) //answerChosingInterval * maybe fixed
-  }
+      setTimeout(() => {
+        setComputerAnswer(
+          state.questions[state.currentQuestion].answers[randomAnswerNumber]
+            .answer,
+          15 - answerChosingInterval
+        )
+      }, answerChosingInterval * 1000)
+    },
+    [state.currentQuestion, state.questions]
+  )
 
-  const setAutoPlayer3Answer = (answer: string, answerTime: number) => {
-    dispatch({
-      type: ACTIONS.SET_AUTO_PLAYER3_ANSWER,
-      answer,
-      answerTime,
-    })
-  }
+  const setAutoPlayer3Answer = useCallback(
+    (answer: string, answerTime: number) => {
+      dispatch({
+        type: ACTIONS.SET_AUTO_PLAYER3_ANSWER,
+        answer,
+        answerTime,
+      })
+    },
+    []
+  )
 
-  const setAutoPlayer2Answer = (answer: string, answerTime: number) => {
-    dispatch({
-      type: ACTIONS.SET_AUTO_PLAYER2_ANSWER,
-      answer,
-      answerTime,
-    })
-  }
+  const setAutoPlayer2Answer = useCallback(
+    (answer: string, answerTime: number) => {
+      dispatch({
+        type: ACTIONS.SET_AUTO_PLAYER2_ANSWER,
+        answer,
+        answerTime,
+      })
+    },
+    []
+  )
 
-  const setAutoPlayer1Answer = (answer: string, answerTime: number) => {
-    dispatch({
-      type: ACTIONS.SET_AUTO_PLAYER1_ANSWER,
-      answer: answer,
-      answerTime,
-    })
-  }
+  const setAutoPlayer1Answer = useCallback(
+    (answer: string, answerTime: number) => {
+      dispatch({
+        type: ACTIONS.SET_AUTO_PLAYER1_ANSWER,
+        answer: answer,
+        answerTime,
+      })
+    },
+    []
+  )
 
-  const setNextQuestion = () => {
+  const setNextQuestion = useCallback(() => {
     suffleAnswersOrder()
     dispatch({
       type: ACTIONS.SET_CURRENT_QUESTION,
       currentQuestion: state.currentQuestion + 1,
     })
-  }
+    //suffleAnswersOrder will never change
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state.currentQuestion])
 
-  const setPlayersInfomation = (playersInformation: any) => {
-    dispatch({
-      type: ACTIONS.SET_PLAYERS_INFORMATION,
-      playersInformation,
-    })
-  }
+  const setPlayersInfomation = useCallback(
+    (playersInformation: PlayerInformationType) => {
+      dispatch({
+        type: ACTIONS.SET_PLAYERS_INFORMATION,
+        playersInformation,
+      })
+    },
+    []
+  )
 
-  const setHumanPlayerAnswer = (answer: string, answerTime: number) => {
-    dispatch({
-      type: ACTIONS.SET_HUMAN_PLAYER_ANSWER,
-      answer,
-      answerTime,
-    })
-  }
+  const setHumanPlayerAnswer = useCallback(
+    (answer: string, answerTime: number) => {
+      dispatch({
+        type: ACTIONS.SET_HUMAN_PLAYER_ANSWER,
+        answer,
+        answerTime,
+      })
+    },
+    []
+  )
 
   const suffleAnswersOrder = useCallback(() => {
     dispatch({
       type: ACTIONS.SET_ANSWER_ORDER,
       answerOrder: shuffleArray(state.answerOrder),
     })
-  }, [])
+  }, [state.answerOrder])
 
   const setNumberOfQuestion = useCallback(async (numberOfQuestion: number) => {
     dispatch({
@@ -271,41 +300,45 @@ const useQuiz = () => {
       isQuestionsFetching: true,
     })
     try {
-      const quizQuestion = await getQuizQuestios(numberOfQuestion)
+      const quizQuestions = await getQuizQuestios(numberOfQuestion)
       setQuestions(
-        quizQuestion.data.results.map((item: any) => ({
-          ...item,
-          correct_answer: htmlDecode(item.correct_answer),
-          question: htmlDecode(item.question),
-          answers: [
-            {
-              answer: htmlDecode(item.correct_answer),
-            },
-            {
-              answer: htmlDecode(item.incorrect_answers[0]),
-            },
-            {
-              answer: htmlDecode(item.incorrect_answers[1]),
-            },
-          ],
-        }))
+        quizQuestions.data.results.map(
+          (quizQuestion: QuestionResponseType) => ({
+            ...quizQuestion,
+            correct_answer: htmlDecode(quizQuestion.correct_answer),
+            question: htmlDecode(quizQuestion.question),
+            answers: [
+              {
+                answer: htmlDecode(quizQuestion.correct_answer),
+              },
+              {
+                answer: htmlDecode(quizQuestion.incorrect_answers[0]),
+              },
+              {
+                answer: htmlDecode(quizQuestion.incorrect_answers[1]),
+              },
+            ],
+          })
+        )
       )
-    } catch (e) {
-      console.log(e)
+    } catch {
+      navigate('/error')
     }
 
     dispatch({
       type: ACTIONS.SET_IS_QUESTIONS_FETCHING,
       isQuestionsFetching: false,
     })
+    //suffleAnswersOrder will never change
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  const setQuestions = (questions: number) => {
+  const setQuestions = useCallback((questions: number) => {
     dispatch({
       type: ACTIONS.SET_QUESTIONS,
       questions,
     })
-  }
+  }, [])
 
   const setNumberOfPlayers = useCallback((numberOfPlayers: number) => {
     dispatch({
@@ -334,21 +367,24 @@ const useQuiz = () => {
   }
 
   const findFirstCorrectAnswer = () => {
-    const initialValue: any = {
-      answer: null,
+    const initialValue = {
+      answer: '',
       answerTime: 0,
-      firstAnswerPlayer: null,
+      firstAnswerPlayer: '',
     }
 
     const correctAnswer = state.questions[state.currentQuestion].correct_answer
     return Object.keys(state.playersAnswers).reduce(
       (accumulator, currentValue) => {
         if (
-          state.playersAnswers[currentValue].answer === correctAnswer &&
-          accumulator.answerTime < state.playersAnswers[currentValue].answerTime
+          state.playersAnswers[currentValue as keyof PlayerAnswersType]
+            .answer === correctAnswer &&
+          accumulator.answerTime <
+            state.playersAnswers[currentValue as keyof PlayerAnswersType]
+              .answerTime
         ) {
           return {
-            ...state.playersAnswers[currentValue],
+            ...state.playersAnswers[currentValue as keyof PlayerAnswersType],
             firstAnswerPlayer: currentValue,
           }
         }
@@ -363,37 +399,50 @@ const useQuiz = () => {
     const { firstAnswerPlayer } = findFirstCorrectAnswer()
 
     setPlayersInfomation(
-      state.playersInformation.map((playerInfo: any, index: number) => {
-        if (index < state.numberOfPlayers) {
-          let finalPoints = 0
+      state.playersInformation.map(
+        (playerInfo: PlayerInformationType, index: number) => {
+          if (index < state.numberOfPlayers && playerInfo.id) {
+            let finalPoints = 0
 
-          if (state.playersAnswers[playerInfo.id].answer === correctAnswer) {
-            if (playerInfo.id === firstAnswerPlayer) {
-              finalPoints = 15
+            if (state.playersAnswers[playerInfo.id].answer === correctAnswer) {
+              if (playerInfo.id === firstAnswerPlayer) {
+                finalPoints = 15
+              } else {
+                finalPoints = 10
+              }
+            } else if (state.playersAnswers[playerInfo.id].answer === null) {
+              finalPoints = -10
             } else {
-              finalPoints = 10
+              finalPoints = -5
             }
-          } else if (state.playersAnswers[playerInfo.id].answer === null) {
-            finalPoints = -10
-          } else {
-            finalPoints = -5
+            return {
+              ...playerInfo,
+              score: playerInfo.score + finalPoints, // score: playerInfo.score + finalPoints
+            }
           }
-          return {
-            ...playerInfo,
-            score: 10, // score: playerInfo.score + finalPoints
-          }
+          return playerInfo
         }
-        return playerInfo
-      })
+      )
     )
   }
 
   useEffect(() => {
+    let timer1: NodeJS.Timeout
+    let timer2: NodeJS.Timeout
+
     if (state.numberOfPlayers && state.questions.length) {
+      if (state.timer === 15) {
+        Object.values(autoPlayerAnswerSetters).forEach((setter, index) => {
+          if (index < state.numberOfPlayers - 1) {
+            generateComputerAnswer(setter)
+          }
+        })
+      }
+
       let isRoundFinished =
-        Object.values(state.playersAnswers)
+        Object.values(state.playersAnswers as PlayerAnswersType)
           .slice(0, state.numberOfPlayers)
-          .every((player: any, index: number) => {
+          .every((player: PlayerAnswerType) => {
             return player.answer !== null
           }) || state.timer === 0
 
@@ -403,22 +452,18 @@ const useQuiz = () => {
           isRoundFinished,
         })
 
-      if (state.timer === 15) {
-        Object.values(autoPlayerAnswerSetters).forEach((setter, index) => {
-          if (index < state.numberOfPlayers - 1) {
-            generateComputerAnswer(setter) // GENEREATE COMPUTER ANSWER
-          }
-        })
+      if (state.timer > 0 && !isRoundFinished) {
+        timer1 = setTimeout(() => setTimer(state.timer - 1), 1000)
       }
-
-      state.timer > 0 &&
-        !isRoundFinished &&
-        setTimeout(() => setTimer(state.timer - 1), 1000)
-
       if (isRoundFinished) {
         calculatePlayersPoints()
-        setTimeout(() => {
-          if (!((state.currentQuestion + 1) === state.questions.length && isRoundFinished)) {
+        timer2 = setTimeout(() => {
+          if (
+            !(
+              state.currentQuestion + 1 === state.questions.length &&
+              isRoundFinished
+            )
+          ) {
             dispatch({
               type: ACTIONS.RESET_PLAYER_ANSWERS,
             })
@@ -428,15 +473,22 @@ const useQuiz = () => {
             })
             setNextQuestion()
             setTimer(15)
-          }
-          else {
+          } else {
             dispatch({
-              type: ACTIONS.GET_THE_WINNER
+              type: ACTIONS.GET_THE_WINNER,
             })
+            navigate('/results')
           }
         }, 4000) // 4 sec
       }
     }
+
+    return () => {
+      clearTimeout(timer1)
+      clearTimeout(timer2)
+    }
+    // disabled because no need to add any setter, they will not change
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state.timer, state.numberOfPlayers, state.questions])
 
   return {

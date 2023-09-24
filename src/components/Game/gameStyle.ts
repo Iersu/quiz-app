@@ -29,16 +29,19 @@ export const ScoreboardWrapper = styled.div`
   height: fit-content;
   ${ScoreboardCard}:nth-child(2) {
     margin-left: -10px;
+    min-width: 236px;
     z-index: -1;
     background-image: linear-gradient(90deg, #cd2e4b 0%, #ff4369 100%);
   }
   ${ScoreboardCard}:nth-child(3) {
     margin-left: -10px;
+    min-width: 236px;
     z-index: -2;
     background-image: linear-gradient(90deg, #cd2e4b 0%, #ff4369 100%);
   }
   ${ScoreboardCard}:nth-child(4) {
     margin-left: -10px;
+    min-width: 236px;
     z-index: -3;
     background-image: linear-gradient(90deg, #cd2e4b 0%, #ff4369 100%);
   }
@@ -66,6 +69,7 @@ export const TimerIcon = styled.img`
   height: 35px;
   width: 35px;
   margin-right: 15px;
+  background-image: url('/assets/svgs/timer-20.svg');
 `
 
 export const Time = styled.p`
@@ -98,8 +102,8 @@ export const Question = styled.h2`
   text-align: center;
 `
 interface AnswerProps {
-  correctAnswer: boolean
-  selectedAnswer: boolean
+  $correctanswer: boolean
+  $selectedanswer: boolean
 }
 
 export const Answer = styled('div')<AnswerProps>`
@@ -107,31 +111,31 @@ export const Answer = styled('div')<AnswerProps>`
   padding: 5px 30px 5px 10px;
   align-items: center;
   border-radius: 30px;
-  border: 1px solid ${({ theme }) => theme.colors.borderColor};
+  border: 2px solid ${({ theme }) => theme.colors.borderColor};
   cursor: pointer;
-  background: ${({ correctAnswer, selectedAnswer }) =>
-    (correctAnswer && 'green') || (selectedAnswer && 'orange')};
+  background: ${({ $correctanswer, $selectedanswer }) =>
+    ($correctanswer && 'green') || ($selectedanswer && 'orange')};
 `
 
 interface AnswerContainerProps {
-  isRoundFinished: boolean
+  $isRoundFinished: boolean
 }
 
 export const AnswersContainer = styled('div')<AnswerContainerProps>`
   display: flex;
-
+  user-select: none;
   ${Answer}:nth-child(n + 2) {
     margin-left: 20px;
   }
 
   ${Answer} {
     &: hover {
-      background: ${({ isRoundFinished }) => !isRoundFinished && 'orange'};
+      background: ${({ $isRoundFinished }) => !$isRoundFinished && 'orange'};
     }
   }
 `
 
-export const AnswerLable = styled.div`
+export const AnswerLabel = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
@@ -160,8 +164,26 @@ export const SpinnerConatiner = styled.div`
 export const StyledLink = styled(Link)`
   text-decoration: none;
   color: white;
+  font-size: 20px;
   font-weight: bold;
   border-radius: 30px;
   padding: 5px 30px;
-  border: 1px solid ${({ theme }) => theme.colors.borderColor};
+  border: 2px solid ${({ theme }) => theme.colors.borderColor};
+`
+
+export const ResultsWrapper = styled.div`
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+`
+
+export const ResultsTitle = styled.h1`
+  font-size: 64px;
+  font-weight: bold;
+`
+
+export const WinnerName = styled.h3`
+  font-size: 32px;
 `

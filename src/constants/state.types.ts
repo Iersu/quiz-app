@@ -1,3 +1,5 @@
+import { PlayerInformationType, WinnerType } from './types'
+
 export interface QuizStateType {
   numberOfQuestion: number
   numberOfPlayers: number
@@ -7,28 +9,24 @@ export interface QuizStateType {
   currentQuestion: number
   answerOrder: number[]
   isRoundFinished: boolean
-  playersInformation: {
-    name: string
-    score: number
-  }[]
-  // playersAnswers: {
-  //   humanPlayer: {
-  //     answer: null
-  //     answerTime: null
-  //   }
-  //   autoPlayer1: {
-  //     answer: null
-  //     answerTime: null
-  //   }
-  //   autoPlayer2: {
-  //     answer: null
-  //     answerTime: null
-  //   }
-  //   autoPlayer3: {
-  //     answer: null
-  //     answerTime: null
-  //   }
-  // }
-  playersAnswers: any
-  winner: any
+  playersInformation: PlayerInformationType[]
+  playersAnswers: {
+    humanPlayer: {
+      answer: null | string
+      answerTime: null | number
+    }
+    autoPlayer1: {
+      answer: null | string
+      answerTime: null | number
+    }
+    autoPlayer2: {
+      answer: null | string
+      answerTime: null | number
+    }
+    autoPlayer3: {
+      answer: null | string
+      answerTime: null | number
+    }
+  }
+  winner: WinnerType
 }

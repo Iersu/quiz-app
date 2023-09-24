@@ -1,72 +1,34 @@
-import { useNavigate } from 'react-router-dom'
-import { Box } from '../../atoms'
-import { Menu, Select } from '../../components'
-import { PlayerSelectButton } from '../../components/Menu/menuStyle'
-import {  useQuizContext } from '../../context'
+import { Menu } from '../../components'
+import {
+  PlayersSelect,
+  QuestionsSelect,
+  ThemesSelect,
+} from '../../components/Menu'
+import { Spinner } from '../../components/Game'
 
-const MenuPage = ({selectedTheme, setSelectedTheme}: any) => {
-  const {
-    setNumberOfQuestion,
-    setNumberOfPlayers,
-    numberOfQuestion,
-  } = useQuizContext()
-  const navigate = useNavigate();
+import { useQuizContext } from '../../context'
 
-  const handleThemeSelect = (event: any) => {
-    if (event.target.value === '') return
-    setSelectedTheme(event.target.value)
-  }
+import { ThemeProps } from '../../constants/types'
 
-  const onNumberOfQuestionsChange = async (event: any) => {
-    if (event.target.value === '') return
-    setNumberOfQuestion(event.target.value)
-  }
+const MenuPage = ({ selectedTheme, setSelectedTheme }: ThemeProps) => {
+  const { numberOfQuestion, isQuestionsFetching } = useQuizContext()
 
-  const handlePlayerSelect = (players: number) => () => {
-    setNumberOfPlayers(players)
-    navigate("/game")
-    
-  }
-
-  return (
+  return isQuestionsFetching ? (
+    <Spinner />
+  ) : (
     <Menu>
-          {!numberOfQuestion ? (
-            <div>
-              <Select onChange={handleThemeSelect} value={selectedTheme}>
-                <option value="">SELECT THEME</option>
-                <option key="blue" value="blue">
-                  BLUE THEME
-                </option>
-                <option key="black" value="black">
-                  BLACK THEME
-                </option>
-              </Select>
-              <Box pt="25px">
-                <Select
-                  onChange={onNumberOfQuestionsChange}
-                  value={numberOfQuestion}
-                >
-                  <option value="">NUMBER OF QUESTIONS</option>
-                  <option value={2}>10</option>{/* put it back to 10 */}
-                  <option value={30}>30</option>
-                  <option value={50}>50</option>
-                </Select>
-              </Box>
-            </div>
-          ) : (
-            <>
-              <PlayerSelectButton onClick={handlePlayerSelect(2)}>
-                2 PLAYERS
-              </PlayerSelectButton>
-              <PlayerSelectButton onClick={handlePlayerSelect(3)}>
-                3 PLAYERS
-              </PlayerSelectButton>
-              <PlayerSelectButton onClick={handlePlayerSelect(4)}>
-                4 PLAYERS
-              </PlayerSelectButton>
-            </>
-          )}
-        </Menu>
+      {!numberOfQuestion ? (
+        <>
+          <ThemesSelect
+            setSelectedTheme={setSelectedTheme}
+            selectedTheme={selectedTheme}
+          />
+          <QuestionsSelect />
+        </>
+      ) : (
+        <PlayersSelect />
+      )}
+    </Menu>
   )
 }
 

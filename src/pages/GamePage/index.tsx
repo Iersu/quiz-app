@@ -1,41 +1,20 @@
 import { Header, Quiz } from '../../components/Game'
-import { useQuizContext } from '../../context'
-import { QuestionCounter, SpinnerConatiner, Wrapper } from '../../components/Game/gameStyle'
+import { QuestionCounter, Wrapper } from '../../components/Game/gameStyle'
 
-interface QuestionResponseType {
-  category: string
-  correct_answer: string
-  difficulty: string
-  incorrect_answers: string[]
-  question: string
-  type: string
-}
+import { useQuizContext } from '../../context'
 
 const GamePage = () => {
-  const {
-    questions,
-    currentQuestion,
-    isQuestionsFetching
-  } = useQuizContext()
+  const { questions, currentQuestion } = useQuizContext()
 
-
-  // ((currentQuestion + 1) === questions.length && isRoundFinished)
   return (
-    !isQuestionsFetching ? (
-      <Wrapper>
-        <Header />
-        <Quiz />
-        <QuestionCounter>
-          {currentQuestion + 1} / {questions.length}
-        </QuestionCounter>
-      </Wrapper>
-    ) : (
-      <SpinnerConatiner>
-        <img src="/assets/svgs/loading-loop.svg" alt="loading" />
-      </SpinnerConatiner>
-    )
+    <Wrapper>
+      <Header />
+      <Quiz />
+      <QuestionCounter>
+        {currentQuestion + 1} / {questions.length}
+      </QuestionCounter>
+    </Wrapper>
   )
-
 }
 
 export default GamePage
